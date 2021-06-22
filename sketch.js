@@ -110,6 +110,9 @@ function draw() {
   }
 }
 
+//check up arrow key. it should be changing back to standing.
+// titan hurt image
+
 
 
 
