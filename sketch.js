@@ -1,22 +1,36 @@
 var backGroundImg, bgSprite
-var player, playerSprite
+var playerSprite
 var gameState = "start"
 var button1
-var titan, titanSprite
+var titan, titanSprite, titanGroup, titanNumber = 5;
 var rand
 var erenImage, titanImage
-var erenImageSprite, titanImageSprite
+var erenImageSprite, titanImageSprite, titanHurt
 var aot, aotLogo
+var playerStanding, playerRunning, playerJumping 
+var titanHealth = 100, playerLives = 3
+var liveImage
+var sec
+var fireBallGroup,fire
+var ground
+var erenDead, erenDeadSprite
+var score = 0  
 
 
 
 function preload() {
   backGroundImg = loadImage('images/backGround.jpg')
-  player = loadImage('images/eren.png')
+  playerRunning = loadAnimation('images/tile012.png', 'images/tile013.png', 'images/tile014.png')
+  playerJumping = loadImage('images/tile006.png')
+  playerStanding = loadImage('images/eren.png')
   titan = loadImage('images/titanSprite (1).png')
   erenImage = loadImage('images/erenY.jpg')
-  titanImage = loadImage('images/titanC.jpg')
+  titanImage = loadImage('images/titanpic.png')
   aot = loadImage('images/singekiNoKyojin.png')
+  liveImage = loadImage('images/surveyCorp (1).png')
+  fire = loadImage('images/tile001.png')
+  erenDead = loadImage('images/erenDead.png')
+  titanHurt = loadImage('images/titanHurt.png')
 
 }
 function setup() {
@@ -27,30 +41,47 @@ function setup() {
   bgSprite.scale = 1
   bgSprite.velocityX = -2
 
+  ground = createSprite(width/2, height-30, width, 20)
+  ground.visible = false
+
   playerSprite = createSprite(200, 580, 20, 20)
-  playerSprite.addImage(player)
+  playerSprite.addImage("playerStandingImg", playerStanding)
+  playerSprite.addAnimation("playerImg", playerRunning)
+  playerSprite.addImage("playerJump", playerJumping)
+  playerSprite.debug = false
+  playerSprite.setCollider("rectangle", -20,0,70,100)
   playerSprite.scale = 1.5
   playerSprite.visible = false
+  playerSprite.addImage("playerDead",erenDead)
 
   button1 = createButton("Play")
   button1.position(100, 50)
 
-  erenImageSprite = createSprite(200,200,10,10)
+  erenImageSprite = createSprite(200, 200, 10, 10)
   erenImageSprite.scale = 0.3
   erenImageSprite.addImage(erenImage)
+  
 
-  titanImageSprite = createSprite(200,500,5,5)
-  titanImageSprite.scale = 0.08
+  titanImageSprite = createSprite(200, 470, 5, 5)
+  titanImageSprite.scale = 0.6
   titanImageSprite.addImage(titanImage)
 
-  aotLogo = createSprite(750,90,5,5)
+  aotLogo = createSprite(750, 90, 5, 5)
   aotLogo.scale = 0.5
   aotLogo.addImage(aot)
+
+  titanGroup = new Group()
+
+  sec = second()
+
+  fireBallGroup = new Group()
+
 
 }
 
 function draw() {
   background(205, 153, 0);
+  drawSprites();
 
   if (bgSprite.x < 0) {
     bgSprite.x = bgSprite.width / 2
@@ -62,54 +93,23 @@ function draw() {
     erenImageSprite.visible = false
     titanImageSprite.visible = false
     aotLogo.visible = false
+
+    
   })
-  
-
-  if (gameState === "play") {
-    playerSprite.visible = true
-
-    spawnTitans()
-
-    if (keyDown(UP_ARROW)) {
-      player.velocityY = player.velocityX - 2
-    }
-
-    if (keyDown(DOWN_ARROW)) {
-      player.velocity = player.velocityY + 2
-    }
-    if (keyDown(RIGHT_ARROW)) {
-      player.velocityX = player.velocityX + 2
-    }
-    if (keyDown(LEFT_ARROW)) {
-      player.velocityX = player.velocityX - 2
-    }
-
-  }
-
-
-
-  drawSprites();
 
   if (gameState === "start") {
-    textSize(20)
-    fill(0)
-    text('This game is set in a world where humanity lives inside cities surrounded by three enormous walls',430,310)
-    text('that protect them from the gigantic man-eating humanoids referred to as Titans.', 430, 340)
-    text('The story follows Eren Yeager, who vows to exterminate the Titans and avenge his loved ones.', 430, 370)
-    titanImageSprite.display()
-    erenImageSprite.display()
-    aotLogo.display()
+    start()
   }
 
+  if (gameState === "play") {
+    play()
+  }
+
+  if(gameState === "gameOver"){
+    gameOver()
+  }
 }
 
-function spawnTitans() {
-  rand = Math.round(random(200, 300))
-
-  titanSprite = createSprite(1400, 570, 20, 20)
-  titanSprite.addImage(titan)
-  titanSprite.scale = 1.5
 
 
-}
 
